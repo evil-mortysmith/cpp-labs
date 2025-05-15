@@ -5,25 +5,25 @@
 #include <fstream>
 
 
-int* add_element2(int* arr, int& size, int& capacity, int value) {
+int* add_element3(int*& arr, int& size, int& capacity, int value) {
     // Если место закончилось, выделяем новый блок
     if (size >= capacity) {
         int new_capacity;
         if (capacity == 0){
-            int new_capacity = 1;
+            new_capacity = 1;
         }
         else{
-            int new_capacity = capacity*2;
+            new_capacity = capacity*2;
         }
         int* new_arr = new int[new_capacity];
         
-
-        for (int i = 0; i < size; ++i) {
-            new_arr[i] = arr[i];
+        if (arr) {
+            for (int i = 0; i < size; ++i) {
+                new_arr[i] = arr[i];
+            }
+            
+            delete[] arr;
         }
-        
-        delete[] arr;
-        
 
         arr = new_arr;
         capacity = new_capacity;
@@ -56,11 +56,11 @@ int main() {
     std::vector<int> time;
     
 
-    for (int i = 0; i < 500; ++i) {
+    for (int i = 0; i < 5000; ++i) {
         auto begin = std::chrono::steady_clock::now();
 
-        for (unsigned cnt = 100; cnt != 0; --cnt) {
-            arr = add_element2(arr, size, capacity, 1);
+        for (unsigned cnt = 100 + i; cnt != 0; --cnt) {
+            arr = add_element3(arr, size, capacity, 1);
         }
 
         
@@ -69,13 +69,16 @@ int main() {
         time.push_back(time_span.count());
 
         delete[] arr;
+        arr = nullptr;
+        size = 0;
+        capacity = 0;
 
     }
     
     writeFile(time, "data_1.3");
     
     
-    delete[] arr;
+
     
     return 0;
 

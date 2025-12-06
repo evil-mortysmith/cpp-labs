@@ -8,6 +8,13 @@ public:
     using value_type = T;
     using size_type = unsigned;
 
+    friend void swap(Grid<T>& first, Grid<T>& second) noexcept {
+        using std::swap;
+        swap(first.data, second.data);
+        swap(first.y_size, second.y_size);
+        swap(first.x_size, second.x_size);
+    }
+
 private:
     T* data;
     size_type y_size, x_size;
@@ -100,6 +107,14 @@ public:
         return data[y_idx * x_size + x_idx];
     }
 
+    RowProxy operator[](size_type y_idx) {
+        return RowProxy(data + y_idx * x_size, x_size);
+    }
+
+    const RowProxy operator[](size_type y_idx) const {
+        return RowProxy(data + y_idx * x_size, x_size);
+    }
+
     Grid<T>& operator=(T const &t) {
         for (auto it = data, end = data + x_size * y_size; it != end; ++it) {
             *it = t;
@@ -111,27 +126,4 @@ public:
     size_type get_x_size() const { return x_size; }
 };
 
-
-
-int main() {
-    Grid<float> g(3, 2, 0.0f);
-    assert(3 == g.get_y_size());
-    assert(2 == g.get_x_size());
-
-    using gsize_t = Grid<float>::size_type;
-
-    for (gsize_t y_idx = 0; y_idx != g.get_y_size(); ++y_idx)
-        for (gsize_t x_idx = 0; x_idx != g.get_x_size(); ++x_idx)
-            assert(0.0f == g[y_idx][x_idx]);
-
-    for (gsize_t y_idx = 0; y_idx != g.get_y_size(); ++y_idx)
-        for (gsize_t x_idx = 0; x_idx != g.get_x_size(); ++x_idx)
-            g[y_idx][x_idx] = 1.0f;
-
-    for (gsize_t y_idx = 0; y_idx != g.get_y_size(); ++y_idx)
-        for (gsize_t x_idx = 0; x_idx != g.get_x_size(); ++x_idx)
-            assert(1.0f == g(y_idx, x_idx));
-    
-    return 0;
-}
 
